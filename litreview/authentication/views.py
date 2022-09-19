@@ -16,10 +16,12 @@ def login_page(request):
             )
             if user is not None:
                 login(request, user)
-                message = f'bonjour, {user.username} vous êtes connêcté.'
+                return redirect('flux')
             else:
                 message = 'identifiants ou mot de passe invalide'
-    return render(request, 'authentication/login.html', context={'form': form})
+    if request.user.is_authenticated:
+        return redirect('flux')
+    return render(request, 'authentication/login.html', context={'form': form, 'message': message})
 
 
 def logout_user(request):

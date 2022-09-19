@@ -16,8 +16,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import review.views
+import authentication.views
+from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('home/', review.views.home, name='home'),
+    path("", authentication.views.login_page, name="login"),
+    path('flux/', review.views.flux, name='flux'),
+    path('signup/', authentication.views.signup_page, name='signup'),
+    path('logout/', authentication.views.logout_user, name='logout'),
+    path('create_review/', review.views.create_review, name="create_review"),
+    path('create_ticket/', review.views.create_ticket, name="create_ticket" ),
+    path('display_posts/', review.views.display_posts, name='post')
+
 ]
