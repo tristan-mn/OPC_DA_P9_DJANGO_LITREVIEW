@@ -1,3 +1,4 @@
+from multiprocessing import context
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 
@@ -21,14 +22,14 @@ def create_ticket(request):
         ticket_form = forms.TicketForm(request.POST)
         photo_form = forms.PhotoForm(request.POST, request.FILES)
         if all([ticket_form.is_valid(), photo_form.is_valid()]):
-            photo = photo_form(commit=False)
+            photo = photo_form.save(commit=False)
             photo.uploader = request.user
             photo.save()
             ticket = ticket_form.save(commit=False)
             ticket.photo = photo
             ticket.save()
             #ticket.contributors.add(request.user, through_defaults={'contribution': 'Auteur principal'})
-            return redirect('posts')
+            return redirect('display_posts')
 
     context = {
         'ticket_form': ticket_form,
@@ -77,17 +78,18 @@ def edit_ticket(request, ticket_id):
     ticket = get_object_or_404(models.Ticket, id=ticket_id)
     edit_form = forms.TicketForm(instance=ticket)
     delete_form = forms.DeleteTicketReviewForm()
-    if request == 'POST':
-        if 'edit_blog' in request.POST:
+    if request.method == 'POST':
+        print(request.POST)
+        if 'edit_ticket' in request.POST:
             edit_form = forms.TicketForm(request.POST, instance=ticket)
             if edit_form.is_valid():
                 edit_form.save()
-                return redirect('home')
-        if 'delete_blog' in request.POST:
-            delete_form = forms.DeleteBlogForm(request.POST)
+                return redirect('display_posts')
+        if 'delete_ticket_or_review' in request.POST:
+            delete_form = forms.DeleteTicketReviewForm(request.POST)
             if delete_form.is_valid():
                 ticket.delete()
-                return redirect('flux')
+                return redirect('display_posts')
     
     context = {
         'edit_form': edit_form,
@@ -133,3 +135,9 @@ def display_review(request, review_id):
 def display_ticket(request, ticket_id):
     ticket = get_object_or_404(models.Ticket, id=ticket_id)
     return render(request, 'review/display_ticket.html', {'ticket': ticket})
+
+@login_required
+def display_posts(request):
+    tickets = models.Ticket.objects.all()
+    context = {'tickets': tickets}
+    return render(request, 'review/display_posts.html', context=context)

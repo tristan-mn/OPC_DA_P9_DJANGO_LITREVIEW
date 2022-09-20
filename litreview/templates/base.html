@@ -14,8 +14,7 @@
 <nav>
     {% if user.is_authenticated %}
     <li><a href="{% url 'flux' %}">Accueil</a></li>
-    <li><a href="">Flux</a></li>
-    <li><a href="">Posts</a></li>
+    <li><a href="{% url 'display_posts' %}">Posts</a></li>
     <li><a href="">Abonnements</a></li>
     <li><a href="{% url 'logout' %}">Se déconnecter</a></li>
     {% endif %}
