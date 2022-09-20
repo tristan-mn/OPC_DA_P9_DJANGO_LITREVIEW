@@ -4,6 +4,7 @@
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ ticket_form.as_p }}
+    {{ photo_form.as_p }}
     <button type="submit">Publier</button>
 </form>
 {% endblock content %}
