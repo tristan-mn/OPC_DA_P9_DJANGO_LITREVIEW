@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ review.headline }}</h2>
+<p><a href="{% url 'edit_review' review.id %}">Modifier la review</a></p>
+    <!-- <img src="{{ review.photo.image.url }}">
+    <p>{{ review.photo.caption }}</p> -->
+    <p>{{ review.body }}</p>
+{% endblock content %}

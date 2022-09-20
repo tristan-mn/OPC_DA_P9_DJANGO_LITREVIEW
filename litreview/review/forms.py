@@ -18,3 +18,6 @@ class ReviewForm(forms.ModelForm):
     class Meta:
         model = models.Review
         fields = ['headline', 'rating', 'body']
+
+class DeleteTicketReviewForm(forms.Form):
+    delete_ticket_or_review = forms.BooleanField(widget=forms.HiddenInput, initial=True)

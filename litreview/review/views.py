@@ -1,14 +1,16 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 
 
-from review import forms
+from review import forms, models
 
 # Create your views here.
+
 
 @login_required
 def flux(request):
     return render(request, 'review/flux.html')
+
 
 
 @login_required
@@ -34,6 +36,8 @@ def create_ticket(request):
     }
 
     return render(request, 'review/create_ticket.html', context=context)
+
+
 
 @login_required
 def create_review(request):
@@ -66,6 +70,66 @@ def create_review(request):
 
     return render(request, 'review/create_review.html', context=context)
 
+
+
 @login_required
-def display_posts(request):
-    return render(request, 'review/display_posts.html')
+def edit_ticket(request, ticket_id):
+    ticket = get_object_or_404(models.Ticket, id=ticket_id)
+    edit_form = forms.TicketForm(instance=ticket)
+    delete_form = forms.DeleteTicketReviewForm()
+    if request == 'POST':
+        if 'edit_blog' in request.POST:
+            edit_form = forms.TicketForm(request.POST, instance=ticket)
+            if edit_form.is_valid():
+                edit_form.save()
+                return redirect('home')
+        if 'delete_blog' in request.POST:
+            delete_form = forms.DeleteBlogForm(request.POST)
+            if delete_form.is_valid():
+                ticket.delete()
+                return redirect('flux')
+    
+    context = {
+        'edit_form': edit_form,
+        'delete_form': delete_form,
+    }
+    return render(request, 'review/edit_ticket.html', context=context)
+
+
+
+@login_required
+def edit_review(request, review_id):
+    review = get_object_or_404(models.Review, id=review_id)
+    edit_form = forms.ReviewForm(instance=review)
+    delete_form = forms.DeleteTicketReviewForm()
+    if request == 'POST':
+        if 'edit_blog' in request.POST:
+            edit_form = forms.ReviewForm(request.POST, instance=review)
+            if edit_form.is_valid():
+                edit_form.save()
+                return redirect('home')
+        if 'delete_blog' in request.POST:
+            delete_form = forms.DeleteBlogForm(request.POST)
+            if delete_form.is_valid():
+                review.delete()
+                return redirect('flux')
+    
+    context = {
+        'edit_form': edit_form,
+        'delete_form': delete_form,
+    }
+    return render(request, 'review/edit_review.html', context=context)
+
+
+
+@login_required
+def display_review(request, review_id):
+    review = get_object_or_404(models.Review, id=review_id)
+    return render(request, 'review/display_review.html', {'review': review})
+
+
+
+@login_required
+def display_ticket(request, ticket_id):
+    ticket = get_object_or_404(models.Ticket, id=ticket_id)
+    return render(request, 'review/display_ticket.html', {'ticket': ticket})
