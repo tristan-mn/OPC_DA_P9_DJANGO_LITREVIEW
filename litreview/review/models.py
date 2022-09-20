@@ -42,7 +42,8 @@ class Review(models.Model):
     body = models.CharField(max_length=8192, blank=True)
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE)
+        on_delete=models.CASCADE,
+        null=True)
     time_created = models.DateTimeField(auto_now_add=True)
 
 

@@ -45,14 +45,14 @@ def create_review(request):
     ticket_form = forms.TicketForm()
     photo_form = forms.PhotoForm()
     review_form = forms.ReviewForm()
-    if request == "POST":
+    if request.method == "POST":
         ticket_form = forms.TicketForm(request.POST)
         photo_form = forms.PhotoForm(request.POST, request.FILES)
         review_form = forms.ReviewForm(request.POST)
         if all([ticket_form.is_valid(),
                 photo_form.is_valid(),
                 review_form.is_valid()]):
-                photo = photo_form(commit=False)
+                photo = photo_form.save(commit=False)
                 photo.uploader = request.user
                 photo.save()
                 ticket = ticket_form.save(commit=False)
@@ -62,7 +62,7 @@ def create_review(request):
                 review.ticket = ticket
                 review.save()
                 #ticket.contributors.add(request.user, through_defaults={'contribution': 'Auteur principal'})
-                return redirect('posts')
+                return redirect('display_posts')
     context = {
         'ticket_form': ticket_form,
         'photo_form': photo_form,
@@ -104,17 +104,17 @@ def edit_review(request, review_id):
     review = get_object_or_404(models.Review, id=review_id)
     edit_form = forms.ReviewForm(instance=review)
     delete_form = forms.DeleteTicketReviewForm()
-    if request == 'POST':
-        if 'edit_blog' in request.POST:
+    if request.method == 'POST':
+        if 'edit_review' in request.POST:
             edit_form = forms.ReviewForm(request.POST, instance=review)
             if edit_form.is_valid():
                 edit_form.save()
-                return redirect('home')
-        if 'delete_blog' in request.POST:
-            delete_form = forms.DeleteBlogForm(request.POST)
+                return redirect('display_posts')
+        if 'delete_ticket_or_review' in request.POST:
+            delete_form = forms.DeleteTicketReviewForm(request.POST)
             if delete_form.is_valid():
                 review.delete()
-                return redirect('flux')
+                return redirect('display_posts')
     
     context = {
         'edit_form': edit_form,
@@ -139,5 +139,9 @@ def display_ticket(request, ticket_id):
 @login_required
 def display_posts(request):
     tickets = models.Ticket.objects.all()
-    context = {'tickets': tickets}
+    reviews = models.Review.objects.all()
+    context = {
+        'tickets': tickets,
+        'reviews': reviews,
+    }
     return render(request, 'review/display_posts.html', context=context)
