@@ -33,6 +33,8 @@ urlpatterns = [
     path('ticket/<int:ticket_id>/edit', review.views.edit_ticket, name='edit_ticket'),
     path('review/<int:review_id>/edit', review.views.edit_review, name='edit_review'),
     path('posts', review.views.display_posts, name='display_posts'),
+    path('follow-users/', review.views.follow_users, name='follow_users'),
+    path('subscription/', review.views.subscription, name='subscription'),
 
 ]
 

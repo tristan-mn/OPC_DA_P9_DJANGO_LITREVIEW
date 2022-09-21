@@ -1,10 +1,10 @@
-from multiprocessing import context
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
-
+from django.contrib import messages
 
 from review import forms, models
-
+from authentication import models as models_auth
 # Create your views here.
 
 
@@ -145,3 +145,57 @@ def display_posts(request):
         'reviews': reviews,
     }
     return render(request, 'review/display_posts.html', context=context)
+
+
+@login_required
+def follow_users(request):
+    form = forms.FollowUsersForm(instance=request.user)
+    if request.method == 'POST':
+        form = forms.FollowUsersForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('flux')
+    return render(request, 'review/follow_users_form.html', context={'form': form})
+
+@login_required
+def subscription(request):
+    user = request.user
+    if user.is_active:
+        if request.method == 'GET':
+            form = forms.UserFollowsForm()
+            user_follows = models.UserFollows.objects.filter(user=request.user)
+            followers = models.UserFollows.objects.filter(followed_user=request.user)
+            infos = {'page_title': 'Abonnements', 'user_follows': user_follows, 'followers': followers, 'form': form}
+            return render(request, 'review/subscription.html', infos)
+        elif request.method == 'POST':
+            form = forms.UserFollowsForm(request.POST, request.FILES)
+            if form.is_valid():
+                followed_user = form.cleaned_data['followed_user']
+                if followed_user is not None:
+                    if user != followed_user:
+                        data_check = models.UserFollows.objects.filter(user=user).filter(followed_user=followed_user)
+                        if not data_check:
+                            form.instance.user = request.user
+                            form.save()
+                            messages.success(request, 'Vous êtes maintenant abonné à cet utilisateur')
+                            return redirect('subscription')
+                        else:
+                            messages.error(request, "Vous suivez déjà cet utilisateur")
+                            return redirect('subscription')
+                    else:
+                        messages.error(request, "Vous ne pouvez pas suivre votre propre profil")
+                        return redirect('subscription')
+                elif followed_user is None:
+                    messages.error(request, "Vous devez sélectionner un utilisateur")
+                    return redirect('subscription')
+    else:
+        return redirect('flux')
+
+@login_required
+def unsubscribe(request, followed_user_id):
+    user = request.user
+    followed_user = get_object_or_404(models_auth.User, id=followed_user_id)
+    user_follows = models.UserFollows.objects.filter(followed_user=followed_user).filter(user=user)
+    if user_follows:
+        user_follows.delete()
+    return redirect('subscription')
