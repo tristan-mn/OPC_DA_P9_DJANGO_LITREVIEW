@@ -17,7 +17,7 @@
 <div>
     {% for review in reviews %}
         <div class="post">
-            <a href="{% url 'display_review' review.id %}">
+            <a href="{% url 'display_review_and_ticket' review.id %}">
                 <h4>Review : {{ review.headline }}</h4>
                 <img src="{{ review.ticket.photo.image.url }}">
             </a>

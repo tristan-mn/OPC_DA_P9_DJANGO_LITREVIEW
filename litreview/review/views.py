@@ -7,13 +7,6 @@ from django.db.models import Q
 from review import forms, models
 # Create your views here.
 
-
-@login_required
-def flux(request):
-    return render(request, 'review/flux.html')
-
-
-
 @login_required
 def create_ticket(request):
     ticket_form = forms.TicketForm()
@@ -63,7 +56,7 @@ def create_review_and_ticket(request):
                 review.user = request.user
                 review.ticket = ticket
                 review.save()
-                return redirect('')
+                return redirect('flux')
     context = {
         'ticket_form': ticket_form,
         'photo_form': photo_form,

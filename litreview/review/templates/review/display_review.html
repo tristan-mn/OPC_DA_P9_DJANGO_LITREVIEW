@@ -1,8 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>{{ review.headline }}</h2>
-<p><a href="{% url 'edit_review' review.id %}">Modifier la review</a></p>
-    <img src="{{ ticket.review.photo.image.url }}">
-    <p>{{ review.ticket.photo.caption }}</p>
+<div>
+    <p>{{ review.user }} a publié une review</p>
+    <p>{{ review.date_created }}</p>
+    <p>{{ review.headline }}</p>
+    <p>{{ review.rating }}</p>
     <p>{{ review.body }}</p>
+    <div>
+        <p>Ticket - {{ review.ticket.author }}</p>
+        <p>{{ review.ticket.headline }}</p>
+        <img src="{{ review.ticket.photo.image.url }}" alt="photo du livre">
+    </div>
+    <p><a href="{% url 'edit_review' review.id %}">Modifier la review</a></p>
+</div>
 {% endblock content %}
