@@ -1,10 +1,10 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib import messages
+from django.db.models import Q
+
 
 from review import forms, models
-from authentication import models as models_auth
 # Create your views here.
 
 
@@ -27,9 +27,9 @@ def create_ticket(request):
             photo.save()
             ticket = ticket_form.save(commit=False)
             ticket.photo = photo
+            ticket.author = request.user
             ticket.save()
-            #ticket.contributors.add(request.user, through_defaults={'contribution': 'Auteur principal'})
-            return redirect('display_posts')
+            return redirect('flux')
 
     context = {
         'ticket_form': ticket_form,
@@ -41,7 +41,7 @@ def create_ticket(request):
 
 
 @login_required
-def create_review(request):
+def create_review_and_ticket(request):
     ticket_form = forms.TicketForm()
     photo_form = forms.PhotoForm()
     review_form = forms.ReviewForm()
@@ -57,18 +57,39 @@ def create_review(request):
                 photo.save()
                 ticket = ticket_form.save(commit=False)
                 ticket.photo = photo
+                ticket.author = request.user
                 ticket.save()
                 review = review_form.save(commit=False)
+                review.user = request.user
                 review.ticket = ticket
                 review.save()
-                #ticket.contributors.add(request.user, through_defaults={'contribution': 'Auteur principal'})
-                return redirect('display_posts')
+                return redirect('')
     context = {
         'ticket_form': ticket_form,
         'photo_form': photo_form,
         'review_form': review_form,
     }
 
+    return render(request, 'review/create_review_and_ticket.html', context=context)
+
+
+
+@login_required
+def create_review(request, ticket_id):
+    ticket = get_object_or_404(models.Ticket, id=ticket_id)
+    review_form = forms.ReviewForm()
+    if request.method == 'POST':
+        review_form = forms.ReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.ticket = ticket
+            review.user = request.user
+            review.save()
+        return redirect('flux')
+    context = {
+            'review_form' : review_form,
+            'ticket': ticket,
+        }
     return render(request, 'review/create_review.html', context=context)
 
 
@@ -130,19 +151,22 @@ def display_review(request, review_id):
     return render(request, 'review/display_review.html', {'review': review})
 
 
-
 @login_required
 def display_ticket(request, ticket_id):
     ticket = get_object_or_404(models.Ticket, id=ticket_id)
     return render(request, 'review/display_ticket.html', {'ticket': ticket})
 
+
 @login_required
 def display_posts(request):
-    tickets = models.Ticket.objects.all()
-    reviews = models.Review.objects.all()
+    tickets = models.Ticket.objects.filter(author=request.user)
+    reviews = models.Review.objects.filter(user=request.user)
+
+    tickets_sorted = sorted(tickets, key=lambda instance: instance.date_created, reverse=True)
+    reviews_sorted = sorted(reviews, key=lambda instance: instance.date_created, reverse=True)
     context = {
-        'tickets': tickets,
-        'reviews': reviews,
+        'tickets': tickets_sorted,
+        'reviews': reviews_sorted,
     }
     return render(request, 'review/display_posts.html', context=context)
 
@@ -157,45 +181,21 @@ def follow_users(request):
             return redirect('flux')
     return render(request, 'review/follow_users_form.html', context={'form': form})
 
-@login_required
-def subscription(request):
-    user = request.user
-    if user.is_active:
-        if request.method == 'GET':
-            form = forms.UserFollowsForm()
-            user_follows = models.UserFollows.objects.filter(user=request.user)
-            followers = models.UserFollows.objects.filter(followed_user=request.user)
-            infos = {'page_title': 'Abonnements', 'user_follows': user_follows, 'followers': followers, 'form': form}
-            return render(request, 'review/subscription.html', infos)
-        elif request.method == 'POST':
-            form = forms.UserFollowsForm(request.POST, request.FILES)
-            if form.is_valid():
-                followed_user = form.cleaned_data['followed_user']
-                if followed_user is not None:
-                    if user != followed_user:
-                        data_check = models.UserFollows.objects.filter(user=user).filter(followed_user=followed_user)
-                        if not data_check:
-                            form.instance.user = request.user
-                            form.save()
-                            messages.success(request, 'Vous êtes maintenant abonné à cet utilisateur')
-                            return redirect('subscription')
-                        else:
-                            messages.error(request, "Vous suivez déjà cet utilisateur")
-                            return redirect('subscription')
-                    else:
-                        messages.error(request, "Vous ne pouvez pas suivre votre propre profil")
-                        return redirect('subscription')
-                elif followed_user is None:
-                    messages.error(request, "Vous devez sélectionner un utilisateur")
-                    return redirect('subscription')
-    else:
-        return redirect('flux')
 
-@login_required
-def unsubscribe(request, followed_user_id):
-    user = request.user
-    followed_user = get_object_or_404(models_auth.User, id=followed_user_id)
-    user_follows = models.UserFollows.objects.filter(followed_user=followed_user).filter(user=user)
-    if user_follows:
-        user_follows.delete()
-    return redirect('subscription')
+def flux(request):
+    # tickets = models.Ticket.objects.filter(
+    #     Q(contributors__in=request.user.follows.all()) |
+    #     Q(starred=True)
+    # )
+    # reviews = models.Review.objects.filter(
+    #     uploader__in=request.user.follows.all()
+    # ).exclude(review__in=tickets)
+
+    tickets = models.Ticket.objects.all()
+    reviews = models.Review.objects.all()
+
+    context = {
+        'tickets': tickets,
+        'reviews': reviews,
+        }
+    return render(request, 'review/flux.html', context=context)

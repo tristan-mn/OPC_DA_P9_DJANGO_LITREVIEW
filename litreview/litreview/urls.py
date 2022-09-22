@@ -26,15 +26,15 @@ urlpatterns = [
     path('flux/', review.views.flux, name='flux'),
     path('signup/', authentication.views.signup_page, name='signup'),
     path('logout/', authentication.views.logout_user, name='logout'),
-    path('review/create', review.views.create_review, name="create_review"),
+    path('review_ticket/create', review.views.create_review_and_ticket, name="create_review_and_ticket"),
     path('ticket/create', review.views.create_ticket, name="create_ticket" ),
-    path('review/<int:review_id>', review.views.display_review, name='display_review'),
+    path('review/create/<int:ticket_id>', review.views.create_review, name="create_review"),
+    path('review/<int:review_id>', review.views.display_review, name='display_review_and_ticket'),
     path('ticket/<int:ticket_id>', review.views.display_ticket, name='display_ticket'),
     path('ticket/<int:ticket_id>/edit', review.views.edit_ticket, name='edit_ticket'),
     path('review/<int:review_id>/edit', review.views.edit_review, name='edit_review'),
     path('posts', review.views.display_posts, name='display_posts'),
     path('follow-users/', review.views.follow_users, name='follow_users'),
-    path('subscription/', review.views.subscription, name='subscription'),
 
 ]
 

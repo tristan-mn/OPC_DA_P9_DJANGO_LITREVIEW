@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser
 
 # on utilise AbstractUser pour créer un utilisateur personnalisé
 class User(AbstractUser):
-    USER = "USER"
     follows = models.ManyToManyField(
         'self',
         verbose_name='suit',

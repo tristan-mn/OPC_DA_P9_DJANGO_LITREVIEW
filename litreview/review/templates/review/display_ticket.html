@@ -3,6 +3,5 @@
 <h2>{{ ticket.headline }}</h2>
 <p><a href="{% url 'edit_ticket' ticket.id %}">Modifier la ticket</a></p>
     <img src="{{ ticket.photo.image.url }}">
-    <p>{{ ticket.photo.caption }}</p>
     <p>{{ ticket.body }}</p>
 {% endblock content %}

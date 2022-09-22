@@ -1,8 +1,40 @@
 {% extends  'base.html' %}
 {% block content %}
+{% csrf_token %}
 <p><a href="{% url 'create_ticket' %}"> Créer un ticket</a></p>
-<p><a href="{% url 'create_review' %}"> Créer une critique</a></p>
+<p><a href="{% url 'create_review_and_ticket' %}"> Créer une critique</a></p>
 
+
+<h2>Tickets :</h2>
+    {% for ticket in tickets %}
+    <div>
+        <p>{{ ticket.date_created }}</p>
+        
+        <p>{{ ticket.author }}</p>
+        <a href="{% url 'display_ticket' ticket.id %}">
+            <p>{{ ticket.headline }}</p>
+        </a>
+        <p>{{ ticket.body }}</p>
+        <img src="{{ ticket.photo.image.url }}">
+        <a href="{% url 'create_review' ticket.id %}">
+            <button>faire une review</button>
+        </a>
+    </div>
+    {% endfor %}
+<hr>
+<h2>Reviews :</h2>
+<div>
+    <!-- 
+        <div>
+            <p>{{ review.date_created }}</p>
+            <p>{{ review.user }} a posté une critique</p>
+            <p>{{ review.rating }}</p>
+            <div>
+                <p>Ticket - {{review.ticket}}</p>
+                <p>{{ review.ticket.headline }}</p>
+            </div>
+        </div> -->
+</div>
 
 
 {% endblock content %}
