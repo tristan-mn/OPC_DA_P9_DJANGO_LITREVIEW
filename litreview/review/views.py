@@ -1,10 +1,12 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-
+from django.contrib import messages
 
 from review import forms, models
+
+from authentication import models as authentication_models
 # Create your views here.
 
 @login_required
@@ -164,17 +166,6 @@ def display_posts(request):
     return render(request, 'review/display_posts.html', context=context)
 
 
-@login_required
-def follow_users(request):
-    form = forms.FollowUsersForm(instance=request.user)
-    if request.method == 'POST':
-        form = forms.FollowUsersForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('flux')
-    return render(request, 'review/follow_users_form.html', context={'form': form})
-
-
 def flux(request):
     # tickets = models.Ticket.objects.filter(
     #     Q(contributors__in=request.user.follows.all()) |
@@ -192,3 +183,28 @@ def flux(request):
         'reviews': reviews,
         }
     return render(request, 'review/flux.html', context=context)
+
+@login_required
+def follow_users(request):
+    user_follows = models.UserFollows.objects.filter(user=request.user)
+    user_followed = models.UserFollows.objects.filter(followed_user=request.user)
+    if request.method == 'POST':
+        user = request.POST.get('username')
+        try:
+            user_to_follow = authentication_models.User.objects.get(username=user)
+            if user_to_follow == request.user:
+                messages.error(request, 'Vous ne pouvez pas vous ajouter vous-même !')
+                return redirect('follow_users')
+        except authentication_models.User.DoesNotExist:
+            messages.error(request, "nom incorrect ou utilisateur inexistant")
+            return redirect('follow_users')
+        else:
+            subscription = models.UserFollows(user=request.user, followed_user=user_to_follow)
+            subscription.save()
+    return render(request, 'review/follow_users_form.html', {'user_follows': user_follows, 'user_followed': user_followed})
+
+@login_required
+def unsubscribe(request, user):
+    user_to_remove = authentication_models.User.objects.get(username=user)
+    models.UserFollows.objects.get(followed_user_id=user_to_remove.id, user_id=request.user.id).delete()
+    return redirect('review/follow_users_form.html')

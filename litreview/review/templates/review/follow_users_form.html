@@ -1,9 +1,46 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>Suivre des utilisateurs</h2>
+    <h2>Suivre d'autres utilisateurs</h2>
     <form method="post">
         {{ form.as_p }}
         {% csrf_token %}
-        <button type="submit" >envoyer</button>
+        <input type="text" name="username" placeholder="Nom d'utilisateur" required>
+        <button type="submit" >confirmer</button>
+
+        {% if messages %}
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+        <br>
+    {% endif %}
+        <hr>
+        <h3>Abonnements</h3>
+        <div>
+            <table>
+                {% for subscription in user_follows %}
+                <tbody>
+                    <tr>
+                        <td>{{ subscription.followed_user }}</td>
+                        <td><a class="button" href="{% url 'unsubscribe' subscription.followed_user %}">Désabonner</a></td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+        <hr>
+        <h3>Abonnés</h3>
+        <div>
+            <table>
+                {% for subscription in user_followed  %}
+                    <tbody>
+                    <tr>
+                        <td>{{ subscription.user }}</td>
+                    </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+        </div>
+        
     </form>
+        
 {% endblock content %}
