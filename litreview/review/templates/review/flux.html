@@ -1,46 +1,19 @@
 {% extends  'base.html' %}
+{% load review_extras %}
 {% block content %}
 {% csrf_token %}
 <p><a href="{% url 'create_ticket' %}"> Créer un ticket</a></p>
 <p><a href="{% url 'create_review_and_ticket' %}"> Créer une critique</a></p>
 
 
-<h2>Tickets :</h2>
-    {% for ticket in tickets %}
+<h2>Feed :</h2>
+    {% for instance  in tickets_and_reviews %}
     <div>
-        <p>{{ ticket.date_created }}</p>
-        
-        <p>{{ ticket.author }}</p>
-        <a href="{% url 'display_ticket' ticket.id %}">
-            <p>{{ ticket.headline }}</p>
-        </a>
-        <p>{{ ticket.body }}</p>
-        <img src="{{ ticket.photo.image.url }}">
-        <a href="{% url 'create_review' ticket.id %}">
-            <button>faire une review</button>
-        </a>
+        {% if instance|model_type == 'Ticket' %}
+            {% include 'review/partials/ticket_snippet.html' with ticket=instance %}
+        {% elif instance|model_type == 'Review' %}
+            {% include 'review/partials/review_snippet.html' with review=instance %}
+        {% endif %}
+    {% endfor %}
     </div>
-    {% endfor %}
-<hr>
-<h2>Reviews :</h2>
-<div>
-    {% for review in reviews %}
-        <div>
-            <p>{{ review.user }} a publié une review</p>
-            <p>{{ review.date_created }}</p>
-            <a href="{% url 'display_review_and_ticket' review.id %}">
-                <p>{{ review.headline }}</p>
-            </a>
-            <p>{{ review.rating }}</p>
-            <p>{{ review.body }}</p>
-            <div>
-                <p>Ticket - {{ review.ticket.author }}</p>
-                <p>{{ review.ticket.headline }}</p>
-                <img src="{{ review.ticket.photo.image.url }}" alt="photo du livre">
-            </div>
-        </div>
-    {% endfor %}
-</div>
-
-
 {% endblock content %}

@@ -1,7 +1,8 @@
+from itertools import chain
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Value, CharField, Q
 from django.contrib import messages
 
 from review import forms, models
@@ -167,22 +168,30 @@ def display_posts(request):
 
 
 def flux(request):
-    # tickets = models.Ticket.objects.filter(
-    #     Q(contributors__in=request.user.follows.all()) |
-    #     Q(starred=True)
-    # )
-    # reviews = models.Review.objects.filter(
-    #     uploader__in=request.user.follows.all()
-    # ).exclude(review__in=tickets)
+    # Nos followers
+    user_follow = authentication_models.User.objects.filter(followed_by__in=models.UserFollows.objects.filter(user=request.user))
+    
+    # Toutes nos reviews ou celles de nos followers
+    all_reviews = models.Review.objects.filter(Q(user__in=user_follow) | Q(user=request.user))
+    
+    # Tous nos tickets et ceux de nos followers
+    all_tickets = models.Ticket.objects.filter(Q(author__in=user_follow) | Q(author=request.user)).exclude(review__in=all_reviews) 
+    
+    all_unreviewed_tickets = all_tickets.exclude(review__in=all_reviews).annotate(
+        state=Value('UNREVIEWED', CharField()))
 
-    tickets = models.Ticket.objects.all()
-    reviews = models.Review.objects.all()
+
+    tickets_and_reviews = sorted(chain(all_unreviewed_tickets, all_reviews),
+                    key=lambda instance: instance.date_created, reverse=True)
 
     context = {
-        'tickets': tickets,
-        'reviews': reviews,
+        'tickets_and_reviews': tickets_and_reviews
         }
     return render(request, 'review/flux.html', context=context)
+
+def get_reviewed_tickets_id(request):
+    all_reviews = models.Review.objects.all()
+    return [review.ticket.id for review in all_reviews]
 
 @login_required
 def follow_users(request):

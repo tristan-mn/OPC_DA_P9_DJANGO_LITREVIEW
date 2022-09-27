@@ -1,0 +1,15 @@
+{% load review_extras %}
+
+<div>
+    <p>Auteur de la review : <strong>{% get_poster_display review.user %}</strong> a publié une review</p>
+    <p>{{ review.date_created }}</p>
+    <a href="{% url 'display_review_and_ticket' review.id %}">
+       <p>{{ review.headline }}</p>
+    </a>
+    <p>{{ review.rating }}</p>
+    <p>{{ review.body }}</p>
+    <div>
+        <p>Ticket - {{ review.ticket.author }}</p>
+        <p>{{ review.ticket.headline }}</p>
+        <img src="{{ review.ticket.photo.image.url }}" alt="photo du livre">
+</div>
