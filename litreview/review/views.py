@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Value, CharField, Q
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 from review import forms, models
 
@@ -184,14 +185,16 @@ def flux(request):
     tickets_and_reviews = sorted(chain(all_unreviewed_tickets, all_reviews),
                     key=lambda instance: instance.date_created, reverse=True)
 
+    paginator = Paginator(tickets_and_reviews, 6)
+    page = request.GET.get('page')
+
+    page_obj = paginator.get_page(page)
+
     context = {
-        'tickets_and_reviews': tickets_and_reviews
+        'page_obj': page_obj
         }
     return render(request, 'review/flux.html', context=context)
 
-def get_reviewed_tickets_id(request):
-    all_reviews = models.Review.objects.all()
-    return [review.ticket.id for review in all_reviews]
 
 @login_required
 def follow_users(request):
