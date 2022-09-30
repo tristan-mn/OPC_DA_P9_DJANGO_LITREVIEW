@@ -27,18 +27,16 @@ Sur votre navigateur, entrer l'adresse suivant pour :
 
 	- accéder au site : http://127.0.0.1:8000/
 
-	- accéder à l'interface administrateur : http://127.0.0.1:8000/admin
+## Créer 3 utilisteurs
 
-## Profils test
+Nom d'utilisateur : jean
 
-Nom d'utilisateur : tristan
+Mot de passe : secret1234
 
-Mot de passe : Secret1995!
+Nom d'utilisateur : pierre
 
-Nom d'utilisateur : assiah
-
-Mot de passe : Secret1995!
+Mot de passe : secret1234
 
 Nom d'utilisateur : toto
 
-Mot de passe : Secret1995!
+Mot de passe : secret1234
