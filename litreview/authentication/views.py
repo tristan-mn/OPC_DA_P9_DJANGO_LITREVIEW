@@ -5,6 +5,15 @@ from django.conf import settings
 # Create your views here.
 
 def login_page(request):
+    """
+    on gère la view de connection à partir du formulaire LoginForm
+
+    Args:
+        request (object): requete http
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     form = forms.LoginForm()
     message = ''
     if request.method == "POST":
@@ -30,6 +39,15 @@ def logout_user(request):
 
 
 def signup_page(request):
+    """
+    on gère la view d'inscription à partir du formulaire LoginForm
+
+    Args:
+        request (object): requete http
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     form = forms.SignupForm()
     if request.method == 'POST':
         form = forms.SignupForm(request.POST)

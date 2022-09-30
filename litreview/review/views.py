@@ -1,4 +1,3 @@
-from email.mime import image
 from itertools import chain
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -14,6 +13,16 @@ from authentication import models as authentication_models
 
 @login_required
 def create_ticket(request):
+    """
+    view nous permettant de créer un ticket et de l'enregistrer
+    pour le ticket on recupere une photo et on l'enregistre
+
+    Args:
+        request (object): requete http
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     ticket_form = forms.TicketForm()
     photo_form = forms.PhotoForm()
     if request.method == "POST":
@@ -40,6 +49,17 @@ def create_ticket(request):
 
 @login_required
 def create_review_and_ticket(request):
+    """
+    view nous permettant de créer un ticket avec une review sur ce même ticket
+    pour cela on utlise 3 formulaire:
+    TicketForm, PhotoForm, ReviewForm
+
+    Args:
+        request (object): requete http
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     ticket_form = forms.TicketForm()
     photo_form = forms.PhotoForm()
     review_form = forms.ReviewForm()
@@ -77,6 +97,17 @@ def create_review_and_ticket(request):
 
 @login_required
 def create_review(request, ticket_id):
+    """
+    view nous permettant de créer une review pour un ticket existant
+    que ce soit le notre ou non
+
+    Args:
+        request (object): requete http
+        ticket_id (str): l'id du ticket visé
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     ticket = get_object_or_404(models.Ticket, id=ticket_id)
     review_form = forms.ReviewForm()
     if request.method == 'POST':
@@ -100,6 +131,16 @@ def create_review(request, ticket_id):
 
 @login_required
 def edit_ticket(request, ticket_id):
+    """
+    view nous permettant de modifier un ticket que nous avons créé précédemment
+
+    Args:
+        request (object): requete http
+        ticket_id (str): l'id du ticket visé
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     ticket = get_object_or_404(models.Ticket, id=ticket_id)
     photo_url = ticket.photo.image.url
     edit_form = forms.TicketForm(instance=ticket)
@@ -134,6 +175,16 @@ def edit_ticket(request, ticket_id):
 
 @login_required
 def edit_review(request, review_id):
+    """
+    view nous permettant de modifier une review que l'on créée précédemment
+
+    Args:
+        request (object): requete http
+        review_id (str): l'id de la review visée
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     review = get_object_or_404(models.Review, id=review_id)
     edit_form = forms.ReviewForm(instance=review)
     delete_form = forms.DeleteTicketReviewForm()
@@ -163,6 +214,16 @@ def edit_review(request, review_id):
 
 @login_required
 def display_posts(request):
+    """
+    on affiche tous les posts triés de l'utilisateur
+    avec la possibilité de les supprimer
+
+    Args:
+        request (object): requete http
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     tickets = models.Ticket.objects.filter(author=request.user)
     reviews = models.Review.objects.filter(user=request.user)
     delete_form = forms.DeleteTicketReviewForm()
@@ -195,6 +256,16 @@ def display_posts(request):
 
 
 def flux(request):
+    """
+    une view qui nous permet d'afficher tous tickets ou reviews de l'utilisateur
+    et ceux des personnes qu'il suit
+
+    Args:
+        request (object): requete http
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     # Nos followers
     user_follow = authentication_models.User.objects.filter(followed_by__in=models.UserFollows.objects.filter(user=request.user))
     
@@ -224,6 +295,16 @@ def flux(request):
 
 @login_required
 def follow_users(request):
+    """
+    view nous permettant de s'abonner à d'autres utilisateurs
+    on récupère aussi les utilisateurs qui sont abonnés à l'utilisateur connecté
+
+    Args:
+        request (object): requete http
+
+    Returns:
+        httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
+    """
     user_follows = models.UserFollows.objects.filter(user=request.user)
     user_followed = models.UserFollows.objects.filter(followed_user=request.user)
     if request.method == 'POST':
@@ -243,6 +324,16 @@ def follow_users(request):
 
 @login_required
 def unsubscribe(request, user):
+    """
+    view permettant de se désabonner d'un utilisateur
+
+    Args:
+        request (object): requete http
+        user (str): nom de l'utilisateur
+
+    Returns:
+        htttpresponse: on se redirige vers la page des followers
+    """
     user_to_remove = authentication_models.User.objects.get(username=user)
     models.UserFollows.objects.get(followed_user_id=user_to_remove.id, user_id=request.user.id).delete()
     return redirect('review/follow_users_form.html')
