@@ -1,9 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
     <h2>Modifier le Ticket</h2>
-    <form method="post">
-        {{ edit_form.as_p }}
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        {{ edit_form.as_p }}
+        <img src="{{ photo_url }}" alt="photo"> 
+        <p>
+            {{edit_photo_form}}
+        </p>
         <button type="submit" >Sauvegarder</button>
     </form>
     <hr>

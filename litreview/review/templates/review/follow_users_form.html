@@ -5,7 +5,7 @@
         {{ form.as_p }}
         {% csrf_token %}
         <input type="text" name="username" placeholder="Nom d'utilisateur" required>
-        <button type="submit" >confirmer</button>
+        <button type="submit" >envoyer</button>
 
         {% if messages %}
         {% for message in messages %}

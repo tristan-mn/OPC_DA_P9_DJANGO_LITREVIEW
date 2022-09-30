@@ -10,6 +10,10 @@ class TicketForm(forms.ModelForm):
     class Meta:
         model = models.Ticket
         fields = ['headline', 'body']
+        labels = {
+            'headline': 'Titre',
+            'body': 'Description'
+        }
 
 class PhotoForm(forms.ModelForm):
     class Meta:
@@ -20,7 +24,11 @@ class ReviewForm(forms.ModelForm):
     edit_review = forms.BooleanField(widget=forms.HiddenInput, initial=True)
     class Meta:
         model = models.Review
-        fields = ['headline', 'rating', 'body']
+        fields = ['headline','body']
+        labels = {
+            'headline': 'Titre',
+            'body': 'Commentaire'
+        }
 
 class DeleteTicketReviewForm(forms.Form):
     delete_ticket_or_review = forms.BooleanField(widget=forms.HiddenInput, initial=True)

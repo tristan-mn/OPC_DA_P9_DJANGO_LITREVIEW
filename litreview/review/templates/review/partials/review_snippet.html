@@ -1,12 +1,24 @@
 {% load review_extras %}
 
 <div>
-    <p>Auteur de la review : <strong>{% get_poster_display review.user %}</strong> a publié une review</p>
+    {% if review.user == user %}
+        <p><strong>{% get_poster_display review.user %}</strong> avez demandé une critique.</p>
+    {% else %}
+        <p><strong>{% get_poster_display review.user %}</strong> a demandé une critique.</p>
+    {% endif %}
+
     <p>{{ review.date_created }}</p>
-    <a href="{% url 'display_review_and_ticket' review.id %}">
-       <p>{{ review.headline }}</p>
-    </a>
-    <p>{{ review.rating }}</p>
+    <!-- <a href="{% url 'edit_review' review.id %}"> -->
+       <p>{{ review.headline }}  -  
+
+           {% for rating in ''|center:review.rating %}
+           ⭐️
+           {% endfor %}
+           {% if review.rating == 0 %}
+           👎 😰 Ce livre ne possède aucune étoile...
+           {% endif %}
+
+       </p>
     <p>{{ review.body }}</p>
     <div>
         <p>Ticket - {{ review.ticket.author }}</p>

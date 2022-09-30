@@ -1,17 +1,35 @@
 {% extends  'base.html' %}
 {% block content %}
-<h2>Créer une review</h2>
-<p>{{ ticket.date_created }}</p>   
-<p>{{ ticket.author }}</p>
-<a href="{% url 'display_ticket' ticket.id %}">
-    <p>{{ ticket.headline }}</p>
-</a>
-<p>{{ ticket.body }}</p>
-<img src="{{ ticket.photo.image.url }}">
-<hr>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ review_form.as_p }}
-    <button type="submit">Publier</button>
-</form>
+<div>
+    <h2>Créer une critique</h2>
+    <div>
+        <p>
+            Vous êtes en train de répondre en réponse à
+        </p>
+        <div>
+            <p>{{ ticket.date_created }}</p>   
+            <p>{{ ticket.author }}</p>
+            <p>{{ ticket.headline }}</p>
+            <p>{{ ticket.body }}</p>
+            <img src="{{ ticket.photo.image.url }}">
+        </div>
+    </div>
+    <hr>
+    <div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>{{ review_form.as_p }}</p>
+            <p>
+                <p>Note</p> 
+                {% for rating in range %}
+                <label>
+                    <input value="{{ rating }}" type="radio" name="rating">
+                    - {{ rating }}
+                </label>
+                {% endfor %}
+            </p>
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+</div>
 {% endblock content%}

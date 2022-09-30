@@ -1,16 +1,21 @@
 {% load review_extras %}
+
 <div>
     <p>{{ ticket.date_created }}</p>
-    <p>Auteur du ticket : <strong>{% get_poster_display ticket.author %}</strong></p>
-    <a href="{% url 'display_ticket' ticket.id %}">
-        <p>{{ ticket.headline }}</p>
-    </a>
+    {% if ticket.author == user %}
+        <p><strong>{% get_poster_display ticket.author %}</strong> avez demandé une critique</p>
+    {% else %}
+        <p><strong>{% get_poster_display ticket.author %}</strong> a demandé une critique</p>
+    {% endif %}
+
+    <p>{{ ticket.headline }}</p>
+
     <p>{{ ticket.body }}</p>
     <img src="{{ ticket.photo.image.url }}">
     {% if ticket.state == 'UNREVIEWED' %}
     <p>
         <a href="{% url 'create_review' ticket.id %}">
-            <button>faire une review</button>
+            <button>créer une critique</button>
         </a>
     </p>
     {% endif %}
