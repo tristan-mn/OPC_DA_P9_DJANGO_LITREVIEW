@@ -336,4 +336,4 @@ def unsubscribe(request, user):
     """
     user_to_remove = authentication_models.User.objects.get(username=user)
     models.UserFollows.objects.get(followed_user_id=user_to_remove.id, user_id=request.user.id).delete()
-    return redirect('review/follow_users_form.html')
+    return redirect('follow_users')
