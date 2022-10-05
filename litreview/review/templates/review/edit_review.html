@@ -1,30 +1,33 @@
-{% extends 'base.html' %}
+{% extends 'review/base.html' %}
 {% block content %}
     <h2>Modifier vôtre critique</h2>
     <div>
-        <div>
-            <p>Vous êtes en train de poster en réponse à</p>
+        <p>Vous êtes en train de poster en réponse à</p>
+        <div class="div_ticket_snippet">
             <div>
-                <p>{{ review.ticket.author }} a demandé une critique</p>
+                <p><strong>{{ review.ticket.author }}</strong> a demandé une critique</p>
                 <p>{{ review.ticket.headline }}</p>
                 <p>{{ review.ticket.body }}</p>
-                <img src="{{ review.ticket.photo.image.url }}" alt="">
+                <img src="{{ review.ticket.photo.url }}" alt="">
             </div>
         </div>
-        <form method="post">
-            {% csrf_token %}
-            {{ edit_form.as_p }}
-            <p>
-                <p>Note</p> 
-                {% for rating in range %}
-                <label>
-                    <input value="{{ rating }}" type="radio" name="rating">
-                    - {{ rating }}
-                </label>
-                {% endfor %}
-            </p>
-            <button type="submit" >Sauvegarder</button>
-        </form>
+        <div class="div_edit_review">
+        <h3>Review</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ edit_form.as_p }}
+                <p>
+                    <p>Note</p> 
+                    {% for rating in range %}
+                    <label>
+                        <input value="{{ rating }}" type="radio" name="rating">
+                        - {{ rating }}
+                    </label>
+                    {% endfor %}
+                </p>
+                <button type="submit" >Envoyer</button>
+            </form>
+        </div>
         <hr>
         <h3>Supprimer la review ?</h3>
         <form method="post">

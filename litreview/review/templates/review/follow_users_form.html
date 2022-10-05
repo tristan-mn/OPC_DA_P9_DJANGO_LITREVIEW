@@ -1,6 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'review/base.html' %}
 {% block content %}
     <h2>Suivre d'autres utilisateurs</h2>
+    <p>Vous êtes connecté en tant que <strong>{{ user }}</strong></p>
     <form method="post">
         {{ form.as_p }}
         {% csrf_token %}

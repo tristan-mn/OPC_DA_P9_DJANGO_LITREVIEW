@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LITReview</title>
+    <link rel="stylesheet" href="{% static '/review/styles.css' %}" />
+</head>
+<body>
+<header>
+    <h1>LITReview</h1>    
+    <nav>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'flux' %}">Accueil</a></li>
+        <li><a href="{% url 'display_posts' %}">Posts</a></li>
+        <li><a href="{% url 'follow_users' %}">Abonnements</a></li>
+        <li><a href="{% url 'logout' %}">Se déconnecter</a></li>
+        {% endif %}
+    </nav>
+</header>
+
+<div id="base_div">
+    {% block content %}
+    {% endblock content %}
+</div>
+
+</body>
+</html>

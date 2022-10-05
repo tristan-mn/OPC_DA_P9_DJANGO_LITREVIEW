@@ -1,4 +1,4 @@
-{% extends  'base.html' %}
+{% extends  'review/base.html' %}
 {% block content %}
 <div>
     <h2>Créer une critique</h2>
@@ -11,7 +11,7 @@
             <p>{{ ticket.author }}</p>
             <p>{{ ticket.headline }}</p>
             <p>{{ ticket.body }}</p>
-            <img src="{{ ticket.photo.image.url }}">
+            <img src="{{ ticket.photo.url }}">
         </div>
     </div>
     <hr>

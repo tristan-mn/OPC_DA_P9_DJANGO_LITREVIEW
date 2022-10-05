@@ -1,6 +1,7 @@
-{% extends 'base.html' %}
-
+{% extends 'review/base.html' %}
+{% load static %}
 {% block content %}
+<div id="incription_div">
     <h2>Inscrivez-vous</h2>
     <div>
         {% if form.errors %}
@@ -13,4 +14,5 @@
         </form>
         <p><a href="{% url 'login' %}"><button>retourner</button></a></p>
     </div>
+</div>
 {% endblock content %}

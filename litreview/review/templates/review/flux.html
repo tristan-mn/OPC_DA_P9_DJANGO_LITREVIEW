@@ -1,11 +1,13 @@
-{% extends  'base.html' %}
+{% extends  'review/base.html' %}
 {% load review_extras %}
 {% block content %}
 {% csrf_token %}
 
-<div>
-    <p><a href="{% url 'create_ticket' %}"> Créer un ticket</a></p>
-    <p><a href="{% url 'create_review_and_ticket' %}"> Créer une critique</a></p>
+<p class="p_user_connected">Vous êtes connecté en tant que <strong>{{ user }}</strong></p>
+
+<div class="div_create_tickets_reviews">
+    <p><a href="{% url 'create_ticket' %}"><button>Créer un ticket</button></a></p>
+    <p><a href="{% url 'create_review_and_ticket' %}"><button>Créer une critique</button></a></p>
 </div>
 
 

@@ -1,10 +1,10 @@
 {% load review_extras %}
 
-<div>
+<div class="div_review_snippet">
     {% if review.user == user %}
-        <p><strong>{% get_poster_display review.user %}</strong> avez demandé une critique.</p>
+        <p><strong>{% get_poster_display review.user %}</strong> avez publié une critique.</p>
     {% else %}
-        <p><strong>{% get_poster_display review.user %}</strong> a demandé une critique.</p>
+        <p><strong>{% get_poster_display review.user %}</strong> a publié une critique.</p>
     {% endif %}
 
     <p>{{ review.date_created }}</p>
@@ -20,8 +20,9 @@
 
        </p>
     <p>{{ review.body }}</p>
-    <div>
+    <div class="div_ticket_from_review">
         <p>Ticket - {{ review.ticket.author }}</p>
         <p>{{ review.ticket.headline }}</p>
-        <img src="{{ review.ticket.photo.image.url }}" alt="photo du livre">
+        <img src="{{ review.ticket.photo.url }}" alt="photo du livre">
+    </div>
 </div>

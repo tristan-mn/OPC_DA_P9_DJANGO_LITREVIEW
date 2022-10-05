@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "review/base.html" %}
 {% block content %}
 <div>
     <h2>Créer un ticket et une review</h2>
@@ -7,25 +7,26 @@
         {% csrf_token %}
         <h3>Ticket</h3>
         {{ ticket_form.as_p }}
-        {{ photo_form.as_p }}
+        <p><label><input type="file" name="photo"></label></p>
     </div>
     <hr>
     <div>
-        <h3>Review</h3>
-        {{ review_form.as_p }}
-        <p>
-            <p>Note</p> 
-            {% for rating in range %}
-            <label>
-                <input value="{{ rating }}" type="radio" name="rating">
-                - {{ rating }}
-            </label>
-            {% endfor %}
-        </p>
-        <button type="submit">Envoyer</button>
+        <p><strong>Review</strong> Review</p>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>{{ review_form.as_p }}</p>
+            <p>
+                <p>Note</p> 
+                {% for rating in range %}
+                <label>
+                    <input value="{{ rating }}" type="radio" name="rating">
+                    - {{ rating }}
+                </label>
+                {% endfor %}
+            </p>
+            <button type="submit">Envoyer</button>
         </form>
     </div>
-
 </div>
 
 {% endblock content %}

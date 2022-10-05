@@ -1,6 +1,6 @@
 {% load review_extras %}
 
-<div>
+<div class="div_ticket_snippet">
     <p>{{ ticket.date_created }}</p>
     {% if ticket.author == user %}
         <p><strong>{% get_poster_display ticket.author %}</strong> avez demandé une critique</p>
@@ -11,7 +11,7 @@
     <p>{{ ticket.headline }}</p>
 
     <p>{{ ticket.body }}</p>
-    <img src="{{ ticket.photo.image.url }}">
+    <img src="{{ ticket.photo.url }}">
     {% if ticket.state == 'UNREVIEWED' %}
     <p>
         <a href="{% url 'create_review' ticket.id %}">

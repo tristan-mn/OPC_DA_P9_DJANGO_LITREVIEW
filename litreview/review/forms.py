@@ -21,16 +21,6 @@ class TicketForm(forms.ModelForm):
             'body': 'Description'
         }
 
-class PhotoForm(forms.ModelForm):
-    """
-    on créé notre model de formulaire PhotoForm
-
-    Args:
-        forms (object): on hérite du model de formulaire de django
-    """
-    class Meta:
-        model = models.Photo
-        fields = ['image']
     
 class ReviewForm(forms.ModelForm):
     """

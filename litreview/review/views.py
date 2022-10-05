@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Value, CharField, Q
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.db import IntegrityError
 
 from review import forms, models
 
@@ -24,23 +25,18 @@ def create_ticket(request):
         httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
     """
     ticket_form = forms.TicketForm()
-    photo_form = forms.PhotoForm()
     if request.method == "POST":
         ticket_form = forms.TicketForm(request.POST)
-        photo_form = forms.PhotoForm(request.POST, request.FILES)
-        if all([ticket_form.is_valid(), photo_form.is_valid()]):
-            photo = photo_form.save(commit=False)
-            photo.uploader = request.user
-            photo.save()
+        photo = request.FILES.get('photo')
+        if ticket_form.is_valid():
             ticket = ticket_form.save(commit=False)
-            ticket.photo = photo
             ticket.author = request.user
+            ticket.photo = photo
             ticket.save()
             return redirect('flux')
 
     context = {
         'ticket_form': ticket_form,
-        'photo_form': photo_form,
     }
 
     return render(request, 'review/create_ticket.html', context=context)
@@ -61,19 +57,13 @@ def create_review_and_ticket(request):
         httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
     """
     ticket_form = forms.TicketForm()
-    photo_form = forms.PhotoForm()
     review_form = forms.ReviewForm()
     if request.method == "POST":
         ticket_form = forms.TicketForm(request.POST)
-        photo_form = forms.PhotoForm(request.POST, request.FILES)
         review_form = forms.ReviewForm(request.POST)
         rating = request.POST.get('rating')
-        if all([ticket_form.is_valid(),
-                photo_form.is_valid(),
-                review_form.is_valid()]):
-                photo = photo_form.save(commit=False)
-                photo.uploader = request.user
-                photo.save()
+        photo = request.FILES.get('photo')
+        if all([ticket_form.is_valid(), review_form.is_valid()]):
                 ticket = ticket_form.save(commit=False)
                 ticket.photo = photo
                 ticket.author = request.user
@@ -86,7 +76,6 @@ def create_review_and_ticket(request):
                 return redirect('flux')
     context = {
         'ticket_form': ticket_form,
-        'photo_form': photo_form,
         'review_form': review_form,
         'range' : range(6),
     }
@@ -142,31 +131,29 @@ def edit_ticket(request, ticket_id):
         httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
     """
     ticket = get_object_or_404(models.Ticket, id=ticket_id)
-    photo_url = ticket.photo.image.url
-    edit_form = forms.TicketForm(instance=ticket)
-    delete_form = forms.DeleteTicketReviewForm()
-    edit_photo_form = forms.PhotoForm()
-    if request.method == 'POST':
-        edit_photo_form = forms.PhotoForm(request.POST, request.FILES)
-        edit_form = forms.TicketForm(request.POST, instance=ticket)
-        if all([edit_photo_form.is_valid(), edit_form.is_valid()]):
-            photo = edit_photo_form.save(commit=False)
-            photo.uploader = request.user
-            photo.save()
-            ticket.photo = photo
+    if ticket.author != request.user:
+        return redirect('display_posts')
+    else:
+        photo_url = ticket.photo.url
+        edit_form = forms.TicketForm(instance=ticket)
+        delete_form = forms.DeleteTicketReviewForm()
+        if request.method == 'POST':
             if 'edit_ticket' in request.POST:
-                edit_form.save()
-                return redirect('display_posts')
-        if 'delete_ticket_or_review' in request.POST:
-            delete_form = forms.DeleteTicketReviewForm(request.POST)
-            if delete_form.is_valid():
-                ticket.delete()
-                return redirect('display_posts')
+                photo = request.FILES.get('photo')
+                ticket.photo = photo
+                edit_form = forms.TicketForm(request.POST, instance=ticket)
+                if  edit_form.is_valid():
+                        edit_form.save()
+                        return redirect('display_posts')
+            if 'delete_ticket_or_review' in request.POST:
+                delete_form = forms.DeleteTicketReviewForm(request.POST)
+                if delete_form.is_valid():
+                    ticket.delete()
+                    return redirect('display_posts')
     
     context = {
         'photo_url': photo_url,
         'edit_form': edit_form,
-        'edit_photo_form': edit_photo_form,
         'delete_form': delete_form,
     }
     return render(request, 'review/edit_ticket.html', context=context)
@@ -186,21 +173,24 @@ def edit_review(request, review_id):
         httpresponse: on retourne la requete http, le template visé avec les variables de gabarit
     """
     review = get_object_or_404(models.Review, id=review_id)
-    edit_form = forms.ReviewForm(instance=review)
-    delete_form = forms.DeleteTicketReviewForm()
-    if request.method == 'POST':
-        if 'edit_review' in request.POST:
-            rating = request.POST.get('rating')
-            review.rating = rating
-            edit_form = forms.ReviewForm(request.POST, instance=review)
-            if edit_form.is_valid():
-                edit_form.save()
-                return redirect('display_posts')
-        if 'delete_ticket_or_review' in request.POST:
-            delete_form = forms.DeleteTicketReviewForm(request.POST)
-            if delete_form.is_valid():
-                review.delete()
-                return redirect('display_posts')
+    if review.user != request.user:
+        return redirect('display_posts')
+    else:
+        edit_form = forms.ReviewForm(instance=review)
+        delete_form = forms.DeleteTicketReviewForm()
+        if request.method == 'POST':
+            if 'edit_review' in request.POST:
+                rating = request.POST.get('rating')
+                review.rating = rating
+                edit_form = forms.ReviewForm(request.POST, instance=review)
+                if edit_form.is_valid():
+                    edit_form.save()
+                    return redirect('display_posts')
+            if 'delete_ticket_or_review' in request.POST:
+                delete_form = forms.DeleteTicketReviewForm(request.POST)
+                if delete_form.is_valid():
+                    review.delete()
+                    return redirect('display_posts')
     
     context = {
         'review': review,
@@ -284,11 +274,13 @@ def flux(request):
 
     paginator = Paginator(tickets_and_reviews, 6)
     page = request.GET.get('page')
+    user = request.user
 
     page_obj = paginator.get_page(page)
 
     context = {
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'user': user,
         }
     return render(request, 'review/flux.html', context=context)
 
@@ -314,13 +306,24 @@ def follow_users(request):
             if user_to_follow == request.user:
                 messages.error(request, 'Vous ne pouvez pas vous ajouter vous-même !')
                 return redirect('follow_users')
+            elif models.UserFollows.objects.filter(followed_user=user_to_follow) :
+                messages.error(request, "Vous suivez déjà cet utilisateur")
+                return redirect('follow_users')
         except authentication_models.User.DoesNotExist:
             messages.error(request, "nom incorrect ou utilisateur inexistant")
             return redirect('follow_users')
         else:
             subscription = models.UserFollows(user=request.user, followed_user=user_to_follow)
             subscription.save()
-    return render(request, 'review/follow_users_form.html', {'user_follows': user_follows, 'user_followed': user_followed})
+    
+    user = request.user
+
+    context = {
+        'user_follows': user_follows,
+        'user_followed': user_followed,
+        'user': user,
+    }
+    return render(request, 'review/follow_users_form.html', context=context)
 
 @login_required
 def unsubscribe(request, user):

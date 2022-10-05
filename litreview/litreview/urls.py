@@ -35,8 +35,8 @@ urlpatterns = [
     path('follow-users/', review.views.follow_users, name='follow_users'),
     path('unsubscribe/<user>', review.views.unsubscribe, name='unsubscribe'),
 
-]
+] 
 
 if settings.DEBUG:
-    urlpatterns += static(
-        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

@@ -1,3 +1,138 @@
 *{
     color: black;
 }
+
+#base_div{
+    border: 1px black solid;
+    margin: 20px;
+    padding: 20px;
+}
+
+#login_div{
+    display: flex;
+    justify-content: space-around;
+}
+
+#login_div div{
+    border: 1px black solid;
+    padding: 50px;
+    background-color:lavender ;
+}
+
+#incription_div{
+    border: 1px black solid;
+    padding: 50px;
+    background-color:lavender ;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+header{
+    display: flex;
+    justify-content: space-around;
+}
+header nav{
+    display: flex;
+    list-style: none;
+}
+header nav li{
+    margin: auto;
+    padding-left: 10px;
+    font-size: larger;
+}
+.p_user_connected{
+    font-size: larger;
+    text-decoration: underline;
+}
+.div_create_tickets_reviews{
+    display: flex;
+    justify-content: space-around;
+}
+.div_create_tickets_reviews button{
+    width: 300px;
+    height: 80px;
+    border-radius: 30px;
+    background-color: lavender;
+}
+.div_ticket_snippet{
+    width: auto;
+    height: auto;
+    margin-bottom: 10px;
+    border: 1px black solid;
+    padding-left: 20px;
+    margin-top: 20px;
+}
+.div_ticket_snippet img{
+    height: 350px;
+    width: 250px;
+}
+.div_review_snippet{
+    width: auto;
+    height: auto;
+    margin-bottom: 10px;
+    border: 1px black solid;
+    padding-left: 20px;
+    margin-top: 20px;
+}
+.div_review_snippet img{
+    height: 350px;
+    width: 250px;
+}
+.div_ticket_from_review{
+    width: auto;
+    height: auto;
+    border: 1px black solid;
+    padding-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    margin-right: 20px;
+}
+
+form p{
+    display: flex;
+    flex-direction: column;
+}
+p button{
+    width: 150px;
+    height: 30px;
+}
+#id_body{
+    height: 120px;
+    width: 90%;
+}
+#id_headline{
+    width: 90%;
+}
+#div_review_from_create_ticket_and_review{
+    display: flex;
+    flex-direction: column;
+}
+.div_buttons_submit_and_delete{
+    display: flex;
+}
+.div_buttons_submit_and_delete button{
+    margin-left: 20px;
+    margin-bottom: 10px;
+    height: 50px;
+    width: 150px;
+    border-radius: 20px;
+}
+.div_edit_review{
+    border: 1px black solid;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+table
+{
+    border-collapse: collapse;
+    width: 100%;
+}
+td
+{
+    border: 1px solid black;
+    padding: 5px 5px 5px 5px;
+}
+td:first-child {
+    width: 80%;
+  }
