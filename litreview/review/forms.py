@@ -5,6 +5,7 @@ from . import models
 
 User = get_user_model()
 
+
 class TicketForm(forms.ModelForm):
     """
     on créé notre model de formulaire TicketForm
@@ -12,16 +13,15 @@ class TicketForm(forms.ModelForm):
     Args:
         forms (object): on hérite du model de formulaire de django
     """
+
     edit_ticket = forms.BooleanField(widget=forms.HiddenInput, initial=True)
+
     class Meta:
         model = models.Ticket
-        fields = ['headline', 'body']
-        labels = {
-            'headline': 'Titre',
-            'body': 'Description'
-        }
+        fields = ["headline", "body"]
+        labels = {"headline": "Titre", "body": "Description"}
 
-    
+
 class ReviewForm(forms.ModelForm):
     """
     on créé notre model de formulaire ReviewForm
@@ -29,14 +29,14 @@ class ReviewForm(forms.ModelForm):
     Args:
         forms (object): on hérite du model de formulaire de django
     """
+
     edit_review = forms.BooleanField(widget=forms.HiddenInput, initial=True)
+
     class Meta:
         model = models.Review
-        fields = ['headline','body']
-        labels = {
-            'headline': 'Titre',
-            'body': 'Commentaire'
-        }
+        fields = ["headline", "body"]
+        labels = {"headline": "Titre", "body": "Commentaire"}
+
 
 class DeleteTicketReviewForm(forms.Form):
     """
@@ -45,7 +45,9 @@ class DeleteTicketReviewForm(forms.Form):
     Args:
         forms (object): on hérite du model de formulaire de django
     """
+
     delete_ticket_or_review = forms.BooleanField(widget=forms.HiddenInput, initial=True)
+
 
 class FollowUsersForm(forms.ModelForm):
     """
@@ -54,7 +56,7 @@ class FollowUsersForm(forms.ModelForm):
     Args:
         forms (object): on hérite du model de formulaire de django
     """
+
     class Meta:
         model = models.UserFollows
-        fields = ['followed_user']
-        
+        fields = ["followed_user"]

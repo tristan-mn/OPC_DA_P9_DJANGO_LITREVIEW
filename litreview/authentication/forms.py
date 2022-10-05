@@ -10,8 +10,12 @@ class LoginForm(forms.Form):
     Args:
         forms (object): on hérite du model de formulaire de django
     """
+
     username = forms.CharField(max_length=63, label="Nom d'utilisateur")
-    password = forms.CharField(max_length=63, widget=forms.PasswordInput, label="mot de passe")
+    password = forms.CharField(
+        max_length=63, widget=forms.PasswordInput, label="mot de passe"
+    )
+
 
 class SignupForm(UserCreationForm):
     """
@@ -20,9 +24,10 @@ class SignupForm(UserCreationForm):
     Args:
         UserCreationForm (object): on hérite du model de formulaire d'authentification de django
     """
+
     class Meta(UserCreationForm.Meta):
         model = get_user_model()
-        fields = ['username']
+        fields = ["username"]
         labels = {
-            'username': "Nom d'utilisteur",
+            "username": "Nom d'utilisteur",
         }
