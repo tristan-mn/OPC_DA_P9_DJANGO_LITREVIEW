@@ -19,6 +19,7 @@ $ source env/bin/activate (Sous Windows => env\Scripts\activate)
 $ pip install -r requirements.txt
 $ cd litreview
 $ python manage.py runserver
+$ python manage.py migrate
 ```
 
 ## Usage
